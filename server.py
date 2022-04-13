@@ -3,7 +3,7 @@ import pandas as pd
 import json
 
 from probLCA import material, assembly, MyEncoder
-from flask   import Flask, request
+from flask   import Flask, jsonify, request
 
 from app import app
 # app = Flask(__name__)
@@ -55,9 +55,21 @@ def import_materials(path):
 
 @app.route('/materials')    
 def print_materials():
-    s = json.dumps( import_materials(r"C:/Users/andrs/Documents/TH OWL/4th semester - thesis/source/materials.json"), cls= MyEncoder)
+    # s = json.dumps( import_materials(r"C:/Users/andrs/Documents/TH OWL/4th semester - thesis/source/materials.json"), cls= MyEncoder)
+    s = material_df.to_json(orient='records')
     return s
 # materials = import_materials()
+
+@app.route('/materials/<category>')
+def get_category(category:str):
+    data = material_df[material_df['L1'] == category]
+    response = data.to_dict( orient= 'records')
+    # parsed = json.loads(response) # none of this returns the response as a json
+    # return json.dumps(parsed, indent=4)
+    # return response
+    return jsonify(response)
+    
+
 
 @app.route('/hello', methods = ['POST'])
 def hello():
