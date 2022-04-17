@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import json
 
-from probLCA import material, assembly
+from LCA import material, assembly
 from flask   import jsonify, request
 
 from app import app
