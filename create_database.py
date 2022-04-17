@@ -3,15 +3,20 @@ import pandas as pd
 import os
 import json
 
+
 def main():
+    if not database_exists():
+        create('materials.json')
+
+def create(output):
     data = []
-    path = r"C:\Users\andrs\Downloads\OBD_2021_II.csv"
+    path = "OBD_2021_II.csv"
     # opening the csv first
     with open(path,'r') as file:
         reader = csv.reader(file, delimiter = ';')
         for row in reader:
             data.append(row)
-        headers = data[0]
+    headers = data[0]
     # pandas.read_csv(path, sep = ';', header = 0, encoding = 'UTF-16') ## For some reason this gives an error
 
     df = pd.DataFrame(data, columns = headers)
@@ -47,26 +52,19 @@ def main():
 
     # Write file to json
 
-    databaseFile = 'materials.json'
-    with open (databaseFile, 'w') as write:
+    with open (output, 'w') as write:
         result = new_df.to_json(orient='records')
         parsed = json.loads(result)
         json.dump(parsed, indent=4, fp=write)
     
-    print(f'Database saved in {os.getcwd()}\{str(databaseFile)}')
+    print(f'Database saved in {os.getcwd()}\{output}')
 
 def database_exists():
-    path = os.getcwd()
-    file_exists = os.path.exists(path +'\materials.json')
-    if (file_exists):
+    path = os.getcwd() + '/materials.json'
+    if os.path.exists(path):
         print(f"Database found in {os.getcwd()}\materials.json")
-    return file_exists
+        return True
+    return False
     
 if __name__ == ("__main__"):
-    if (not database_exists()):
-        main()
-
-def run():
-    if (not database_exists()):
-        main()
-    
+    main()

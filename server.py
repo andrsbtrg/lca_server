@@ -2,11 +2,10 @@ import numpy as np
 import pandas as pd
 import json
 
-from probLCA import material, assembly, MyEncoder
-from flask   import Flask, jsonify, request
+from probLCA import material, assembly
+from flask   import jsonify, request
 
 from app import app
-# app = Flask(__name__)
 
 PATH_TO_MATERIALS  = 'materials.json'
 
@@ -16,10 +15,7 @@ def main():
         global material_df 
         material_df = pd.DataFrame.from_dict(d)
     app.run(debug=True)
-    # list_materials = import_materials(PATH_TO_MATERIALS)
-    # assembly_mats = [list_materials[1], list_materials[2], list_materials[3]]
-    # assembly = probLCA.assembly(assembly_mats, 1.1)
-    # print(simulate(assembly))
+
     
 
 def calculate_impact(material:material, quantity, impact = None):
