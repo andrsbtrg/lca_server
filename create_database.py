@@ -30,10 +30,17 @@ def create(output):
 
     # a better way of filtering
     df = df[df['Konformität'].isin(values=values)]
+    
     # grouping rows together
     # selecting columns to bring from database
-    columns = ["UUID", 'Name (en)' , 'Name (de)', 'Kategorie (en)', 'Bezugsgroesse',
-    'Bezugseinheit', ]
+    columns = [ 
+        'Name (en)' , 
+        'Name (de)', 
+        'Kategorie (en)',
+        'Bezugsgroesse',
+        'Bezugseinheit',
+        'Rohdichte (kg/m3)',
+        'Flaechengewicht (kg/m2)']
     df_main = (df.groupby(columns)
         .apply(lambda x: dict(zip(x['Modul'], x['A2GWPtotal (A2)']))) # because we are filtering by conformity, choose the field A2GWPTotal
         .reset_index(name = 'GWP')) # naming the column as 'GWP'
@@ -48,7 +55,7 @@ def create(output):
     new_df = pd.concat([df_main,cat_df], axis=1)
     # remove uuid and unused category column
     new_df = new_df.drop('Kategorie (en)', axis=1)
-    new_df = new_df.drop('UUID', axis=1)
+    # new_df = new_df.drop('UUID', axis=1)
 
     # Write file to json
 

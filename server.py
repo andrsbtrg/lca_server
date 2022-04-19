@@ -5,15 +5,16 @@ import json
 from LCA import material, assembly
 from flask   import jsonify, request
 
-from app import app
+from app import app, material_df
+
 
 PATH_TO_MATERIALS  = 'materials.json'
 
 def main():
-    with open (PATH_TO_MATERIALS) as f:
-        d = json.load(f)
-        global material_df 
-        material_df = pd.DataFrame.from_dict(d)
+    # with open (PATH_TO_MATERIALS) as f:
+    #     d = json.load(f)
+    #     # global material_df 
+    #     material_df = pd.DataFrame.from_dict(d)
     app.run(debug=True)
 
     
@@ -66,13 +67,6 @@ def get_category(category:str):
     return jsonify(response)
     
 
-
-@app.route('/hello', methods = ['POST'])
-def hello():
-    obj = request.data
-
-    return obj
-
 @app.route('/materials/<int:material_idx>')
 def find_material(material_idx):
     materials = import_materials(PATH_TO_MATERIALS)
@@ -81,9 +75,6 @@ def find_material(material_idx):
 @app.route('/echo', methods = ['POST'])
 def echo():
     data = request.get_json()
-    
-    # for key in data:
-    #     result += data[key]
     return "you said \n" + str(data)
 
 @app.route('/')
