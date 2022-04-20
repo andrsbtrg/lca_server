@@ -30,7 +30,7 @@ def create(output):
 
     # a better way of filtering
     df = df[df['Konformität'].isin(values=values)]
-    
+
     # grouping rows together
     # selecting columns to bring from database
     columns = [ 
@@ -56,7 +56,13 @@ def create(output):
     # remove uuid and unused category column
     new_df = new_df.drop('Kategorie (en)', axis=1)
     # new_df = new_df.drop('UUID', axis=1)
-
+    # rename columns
+    new_df = new_df.rename(columns = {
+        'Bezugsgroesse':'Reference-size',
+        'Bezugseinheit':'Reference-unit',
+        'Rohdichte (kg/m3)':'Density (kg/m3)',
+        'Flaechengewicht (kg/m2)':'Area weight (kg/m2)'
+    })
     # Write file to json
 
     with open (output, 'w') as write:
