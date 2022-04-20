@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field
 import json
 from json import JSONEncoder
-from math import ceil
 
 class material:
     def calculate_sdev(impact:dict):
@@ -81,13 +80,25 @@ class assembly_attributes:
         self.windows = windows
         self.roofs = roofs
 
-
 class building_attributes:
     def __init__(self, geom, scenario = {'Climate': 'Continental', 'Period':'1'}, building_systems = [], building_type = 'Office'):
         self.geometry = geom
         self.scenario = scenario
         self.building_sys = building_systems
         self.building_type = building_type
+
+class utilities:
+    def import_materials(path):
+        with open(path) as f:
+            data = json.load(f)
+            # materials = {}
+            materials = []
+            for d in data:
+                mat = material.to_object(d)
+                # print (mat.name)
+                # materials[mat.name] = mat
+                materials.append(mat)
+            return materials
 
 class MyEncoder(JSONEncoder):
     def default(self, obj):
