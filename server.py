@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import json
 
-from LCA import material, assembly
+from inventory import material, assembly
 from flask   import jsonify, request
 
 from app import app, material_df
@@ -11,13 +11,7 @@ from app import app, material_df
 PATH_TO_MATERIALS  = 'materials.json'
 
 def main():
-    # with open (PATH_TO_MATERIALS) as f:
-    #     d = json.load(f)
-    #     # global material_df 
-    #     material_df = pd.DataFrame.from_dict(d)
     app.run(debug=True)
-
-    
 
 def calculate_impact(material:material, quantity, impact = None):
     impacts = {}
@@ -25,18 +19,18 @@ def calculate_impact(material:material, quantity, impact = None):
         impacts[stage] = material.GWP[stage] * quantity
     return impacts
 
-
-def simulate(assembly:assembly):
-    # n = request.args.get('n', 10)
-    # assemblies = request.args.get('assemblies', None)
+def simulate(assembly:assembly, n):
     n = 100
-    results = []
+    results = {}
     choices = np.random.choice(assembly.materials, size = n) # random part
     for material  in choices:
         partial = calculate_impact(material, assembly.qt)
         results.append(partial)
     return results
 
+def life_cycle_asessment(assembly):
+
+    pass
 
 def import_materials(path):
     with open(path) as f:
@@ -50,7 +44,7 @@ def import_materials(path):
             materials.append(mat)
         return materials
 
-@app.route('/materials')    
+@app.route('/materials')
 def print_materials():
     # s = json.dumps( import_materials(r"C:/Users/andrs/Documents/TH OWL/4th semester - thesis/source/materials.json"), cls= MyEncoder)
     s = material_df.to_json(orient='records')

@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 from json import JSONEncoder
 from math import ceil
@@ -53,21 +53,24 @@ class material:
         return impact_float
 
 
+def calculate_mass():
+    return [assembly.area * m.get_factor() for m in assembly.materials]
+
+@dataclass
 class assembly:
-    def __init__(self, materials:list, area:float , quantity = 1.0):
-        self.materials = materials
-        self.area = area
-        self.quantity = self.qt
-        self.mass = self.calculate_mass()
-
-    def calculate_mass(self):
-        return [self.area * m.conversion_to_kg for m in self.mateials]
-
-
-
-
+    materials: list[material]
+    area: float
+    quantity: float = 1
+    mass: float = field(default_factory = calculate_mass)
+    
+    def impact(self):
+        {}
+        for m in self.materials:
+            for module in m.GWP:
+                i = m.GWP[module] * self.area * m.get_factor()
 
 class assembly_attributes:
+
     def __init__(self, fountation, structure, exterior_walls, floors, interior_walls, ceilings, windows, roofs):
         self.foundation = fountation
         self.structure = structure
