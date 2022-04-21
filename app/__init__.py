@@ -1,16 +1,33 @@
+import os
 import create_database
 from flask import Flask
 import pandas as pd
-import json
 
-# initialize database
-create_database.main()
-# initialize framework
-global material_df
-PATH_TO_MATERIALS  = 'materials.json'
-with open (PATH_TO_MATERIALS) as f:
-        d = json.load(f)
-        # global material_df 
-        material_df = pd.DataFrame.from_dict(d)
+# factory function
+def create_app(test_config = None):
+    # create and configure the app
+    app = Flask(__name__, instance_relative_config=True)
+    app.config.from_mapping(
+        SECRET_KEY='dev',
+        # DATABASE=os.path.join(app.instance_path, 'example.sqlite'),
+    )
 
-app = Flask(__name__)
+    if test_config is None:
+        # load the instance config, if it exists, when not testing
+        app.config.from_pyfile('config.py', silent=True)
+    else:
+        # load the test config if passed in
+        app.config.from_mapping(test_config)
+
+    # ensure the instance folder exists
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
+
+    from . import server
+    app.register_blueprint(server.bp)
+    create_database.main()
+
+    return app
+

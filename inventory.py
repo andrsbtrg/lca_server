@@ -10,7 +10,7 @@ class material:
             sdev[key] = sd
         return sdev
 
-    def __init__(self, name, GWP:dict, reference_size, reference_unit):
+    def __init__(self, name, GWP:dict, reference_size:float, reference_unit:str):
         self.name = name
         self.GWP = self.convert_to_float(GWP)
         self.size = reference_size
@@ -25,8 +25,8 @@ class material:
         yield from{
             "name":self.name,
             "GWP": self.GWP,
-            "unit": self.unit,
-            "unit_value": self.unit_value
+            "size": self.size,
+            "unit": self.unit
         }.items()
     def __str__(self):
         return json.dumps(dict(self), ensure_ascii=False)
@@ -38,7 +38,7 @@ class material:
         return self.__str__()
     
     def to_object(d):
-        inst = material(d['name'], d['GWP'], d['unit'], d['unit_value'])
+        inst = material(d['Name (en)'], d['GWP'], d['Reference-size'], d['Reference-unit'])
         return inst
         
     
@@ -50,7 +50,6 @@ class material:
                 impact_float[key] = value_f
         
         return impact_float
-
 
 def calculate_mass():
     return [assembly.area * m.get_factor() for m in assembly.materials]
@@ -87,7 +86,7 @@ class building_attributes:
         self.building_sys = building_systems
         self.building_type = building_type
 
-class utilities:
+class utils:
     def import_materials(path):
         with open(path) as f:
             data = json.load(f)
