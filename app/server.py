@@ -1,26 +1,23 @@
 from inventory import material, assembly
-from flask import Blueprint, jsonify, request, render_template
+from flask import Blueprint, jsonify, request
 
-
-# from app import get_df
-
+# define blueprint as filename
 bp = Blueprint('/', __name__)
 PATH_TO_MATERIALS  = 'materials.json'
-from app.db import get_db
-# def main():
-#     # app.run(debug=True)
+from app.db import get_material_db
 
+# methods
 
 @bp.route('/materials')
 def print_materials():
     # s = json.dumps( import_materials(r"C:/Users/andrs/Documents/TH OWL/4th semester - thesis/source/materials.json"), cls= MyEncoder)
-    s = get_db().to_json(orient='records')
+    s = get_material_db().to_json(orient='records')
     return s
 
 
 @bp.route('/materials/<category>')
 def get_category(category:str):
-    material_df = get_db()
+    material_df = get_material_db()
     data = material_df[material_df['L1'] == category]
     response = data.to_dict( orient= 'records')
     # parsed = json.loads(response) # none of this returns the response as a json
@@ -28,9 +25,13 @@ def get_category(category:str):
     # return response
     return jsonify(response)
 
-@bp.route('/home')
-def home():
-    return render_template("home.html")
+
+@bp.route('/categories/<str>', methods = ['GET'])
+def get_categories():
+    classifications = ['L1', 'L2', 'L3', 'L4']
+    material_df = get_material_db()
+
+    list(set(material_df['L1']))
 
 
 @bp.route('/echo', methods = ['POST'])
@@ -45,6 +46,3 @@ def hello():
 @bp.route('/')
 def landing():
     return "Welcome :)"
-
-# if __name__ == "__main__":
-#     pass
