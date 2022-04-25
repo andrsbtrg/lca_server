@@ -2,7 +2,7 @@ import csv
 import pandas as pd
 import os
 import json
-
+# import uuid
 
 def init():
     """
@@ -29,7 +29,7 @@ def parse_to_json(csv_path, output = 'materials.json'):
 
     df = pd.DataFrame(data, columns = headers)
 
-    # drop the headers from the data
+    # drop the header from the rows
     df = df.drop(index=0)
     # values to filer dataframe
     values = ["'EN 15804+A2' / 'EN 16485'","'EN 15804+A2'"]
@@ -71,10 +71,12 @@ def parse_to_json(csv_path, output = 'materials.json'):
         'Rohdichte (kg/m3)':'Density (kg/m3)',
         'Flaechengewicht (kg/m2)':'Area weight (kg/m2)'
     })
+    # new_df['id'] = [uuid.uuid4() for _ in range(len(new_df.index))]
+    new_df['id'] = [i for i in range(len(new_df.index))]
     # Write file to json
 
     with open (output, 'w') as write:
-        result = new_df.to_json(orient='records')
+        result = new_df.to_json(orient='records', default_handler=str)
         parsed = json.loads(result)
         json.dump(parsed, indent=4, fp=write)
     
