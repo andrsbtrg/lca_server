@@ -2,6 +2,22 @@ from dataclasses import dataclass, field
 import json
 from json import JSONEncoder
 
+# defining set of possible assemblies
+ASSEMBLY_ATTRIBUTES = {
+    'foundation',
+    'structure',
+    'exterior_walls',
+    'floors',
+    'interior_walls',
+    'ceilings',
+    'windows',
+    'roofs',}
+BUILDING_TYPES = {
+    'office',
+    'residential',
+    'other'
+}
+
 class material:
     def calculate_sdev(impact:dict):
         sdev = {}
@@ -51,51 +67,37 @@ class material:
         
         return impact_float
 
-def calculate_mass():
-    return [assembly.area * m.get_factor() for m in assembly.materials]
 
+structure = { 'uid': 139.4, 'uid2': 128.1 }
 @dataclass
 class assembly:
-    materials: list[material]
-    area: float
-    quantity: float = 1
-    mass: float = field(default_factory = calculate_mass)
-    
-    def impact(self):
-        {}
-        for m in self.materials:
-            for module in m.GWP:
-                i = m.GWP[module] * self.area * m.get_factor()
+    attribute_LV1: str
+    attribute_LV2: str
+    attribute_LV3: str
+    structure: dict
+    mass: float = None
 
-class assembly_attributes:
+    def impact(self, db):
+        i = {}
+        for mat_id in self.structure:
+            mat = db[db['uid'] == mat_id]
+            for module in mat.GWP:
+                i[module] += mat.GWP[module] * self.structure[mat_id]
+        return i
+        
+@dataclass
+class building:
+        assemblies: list[assembly]
+        scenario: dict
 
-    def __init__(self, fountation, structure, exterior_walls, floors, interior_walls, ceilings, windows, roofs):
-        self.foundation = fountation
-        self.structure = structure
-        self.exterior_walls = exterior_walls
-        self.floors = floors
-        self.interior_walls = interior_walls
-        self.ceilings = ceilings
-        self.windows = windows
-        self.roofs = roofs
-
-class building_attributes:
-    def __init__(self, geom, scenario = {'Climate': 'Continental', 'Period':'1'}, building_systems = [], building_type = 'Office'):
-        self.geometry = geom
-        self.scenario = scenario
-        self.building_sys = building_systems
-        self.building_type = building_type
 
 class utils:
     def import_materials(path):
         with open(path) as f:
             data = json.load(f)
-            # materials = {}
             materials = []
             for d in data:
                 mat = material.to_object(d)
-                # print (mat.name)
-                # materials[mat.name] = mat
                 materials.append(mat)
             return materials
 
