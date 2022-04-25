@@ -4,15 +4,23 @@ import os
 import json
 
 
-def main():
-    if not database_exists():
-        create('materials.json')
+def init():
+    """
+    ## Initializes database of LCI materials.
+    
+    Creates a json file from the OBD csv file 
+    """
+    # search for json database file
+    path = os.getcwd() + '/materials.json'
+    if os.path.exists(path):
+        print(f"Database found in {os.getcwd()}\materials.json")
+    else:
+        parse_to_json("OBD_2021_II.csv")
 
-def create(output):
+def parse_to_json(csv_path, output = 'materials.json'):
     data = []
-    path = "OBD_2021_II.csv"
     # opening the csv first
-    with open(path,'r') as file:
+    with open(csv_path,'r') as file:
         reader = csv.reader(file, delimiter = ';')
         for row in reader:
             data.append(row)
@@ -72,12 +80,6 @@ def create(output):
     
     print(f'Database saved in {os.getcwd()}\{output}')
 
-def database_exists():
-    path = os.getcwd() + '/materials.json'
-    if os.path.exists(path):
-        print(f"Database found in {os.getcwd()}\materials.json")
-        return True
-    return False
     
 if __name__ == ("__main__"):
-    main()
+    init()
