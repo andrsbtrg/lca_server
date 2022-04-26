@@ -1,7 +1,6 @@
 import os
 import obd
 from flask import Flask
-import pandas as pd
 from . import server
 
 # Factory function

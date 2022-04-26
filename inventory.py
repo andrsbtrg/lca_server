@@ -76,19 +76,19 @@ class assembly:
     attribute_LV3: str
     structure: dict
     mass: float = None
-
-def impact(self, db):
-    i = {}
-    for mat_id in self.structure:
-        mat = db.iloc[mat_id]
-        gwp = mat['GWP']
-        for module in gwp:
-            print(module)
-            if module in i:
-                i[module] += float(gwp[module]) * self.structure[mat_id]
-            else:
-                i[module] = float(gwp[module]) * self.structure[mat_id]
-    return i
+    
+    def impact(self, db):
+        i = {}
+        for mat_id in self.structure:
+            mat = db.iloc[mat_id]
+            gwp = mat['GWP']
+            for module in gwp:
+                print(module)
+                if module in i:
+                    i[module] += float(gwp[module]) * self.structure[mat_id]
+                else:
+                    i[module] = float(gwp[module]) * self.structure[mat_id]
+        return i
         
 @dataclass
 class building:
