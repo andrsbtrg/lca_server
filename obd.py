@@ -25,12 +25,15 @@ def parse_to_json(csv_path, output = 'materials.json'):
         for row in reader:
             data.append(row)
     headers = data[0]
-    # pandas.read_csv(path, sep = ';', header = 0, encoding = 'UTF-16') ## For some reason this gives an error
 
-    df = pd.DataFrame(data, columns = headers)
+    # df = pd.read_csv(csv_path, sep = ';', encoding = 'unicode_escape', engine='python') ## For some reason this gives an error
+
+    df = pd.DataFrame(data, columns = headers).drop(index=0)
+
+
 
     # drop the header from the rows
-    df = df.drop(index=0)
+    # df = df.drop(index=0)
     # values to filer dataframe
     values = ["'EN 15804+A2' / 'EN 16485'","'EN 15804+A2'"]
     # one way of doing it:
@@ -39,6 +42,13 @@ def parse_to_json(csv_path, output = 'materials.json'):
     # a better way of filtering
     df = df[df['Konformität'].isin(values=values)]
 
+    # correct data types in GWP, because we will group them as a dictionary and changing it later requieres more work
+    df = df.astype({
+            'GWP':'float', 'A2GWPtotal (A2)': 'float', 'Bezugsgroesse' : 'float'
+        },
+        errors= 'ignore')
+    
+    # df['Flaechengewicht (kg/m2)'] = pd.to_numeric(df['Flaechengewicht (kg/m2)'],errors='ignore')
     # grouping rows together
     # selecting columns to bring from database
     columns = [ 
@@ -71,17 +81,22 @@ def parse_to_json(csv_path, output = 'materials.json'):
         'Rohdichte (kg/m3)':'Density (kg/m3)',
         'Flaechengewicht (kg/m2)':'Area weight (kg/m2)'
     })
-    # new_df['id'] = [uuid.uuid4() for _ in range(len(new_df.index))]
+
+    # Change str to numeric in dataframe
+    new_df['Density (kg/m3)'] = pd.to_numeric(new_df['Density (kg/m3)'],errors='ignore')
+    new_df['Area weight (kg/m2)'] = pd.to_numeric(new_df['Area weight (kg/m2)'],errors='ignore')
+    # new_df['Reference-size'] = pd.to_numeric(new_df['Reference-size'], errors='ignore', downcast='unsigned')
+
     new_df['id'] = [i for i in range(len(new_df.index))]
     # Write file to json
 
     with open (output, 'w') as write:
-        result = new_df.to_json(orient='records', default_handler=str)
+        result = new_df.to_json(orient='records')
         parsed = json.loads(result)
         json.dump(parsed, indent=4, fp=write)
     
     print(f'Database saved in {os.getcwd()}\{output}')
 
     
-if __name__ == ("__main__"):
+if __name__ == '__main__':
     init()
