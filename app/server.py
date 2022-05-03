@@ -45,9 +45,9 @@ def hello():
 def landing():
     return "Welcome :)"
 
-@bp.route('/add/material', methods = ['POST'])
+@bp.route('/materials', methods = ['POST'])
 def add_to_materials():
-    try:
+    try:      
         add_to_db(request.json)
     except:
         print('Error adding material')
